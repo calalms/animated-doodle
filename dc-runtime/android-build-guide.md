@@ -22,8 +22,8 @@
 
 3. **Copy your HTML app**
    - Create a `public/` folder
-   - Copy `Dog Walking Tracker.dc.html` and all required assets into `public/`
-   - Ensure `manifest.json` and `pet-parent-manifest.json` are in `public/`
+   - Copy everything from this repo's `dc-runtime/` folder into `public/` (the `.dc.html` files plus `support.js`, `image-slot.js`, `android-frame.jsx`, `browser-window.jsx`, `_ds/`, `manifest.json`, `pet-parent-manifest.json`) — the app needs all of them alongside each other, same as when served from GitHub Pages
+   - This `capacitor.config.json` already lives next to this guide; copy it to your project root (the folder containing `public/`)
 
 4. **Add Android platform**
    ```bash

@@ -1,25 +1,69 @@
-# CODING AGENTS: READ THIS FIRST
+# Callie's Alpine Canine
 
-This is a **handoff bundle** from Claude Design (claude.ai/design).
+Four apps for a one-person dog-walking/pet-sitting business: a walker app
+(GPS walk tracking, client management, payments), a pet-parent web portal,
+a pet-parent phone app (SMS-verified), and a marketing website. Originally
+designed in Claude Design (see `chats/` for the full design conversation);
+implemented here as two parallel, independently-deployable builds.
 
-A user mocked up designs in HTML/CSS/JS using an AI design tool, then exported this bundle so a coding agent can implement the designs for real.
+## The two builds
 
-## What you should do — IMPORTANT
+| | `dc-runtime/` | `vanilla/` |
+|---|---|---|
+| **What it is** | The design tool's own output, patched to run in production | A from-scratch rebuild, same visuals & behavior |
+| **Stack** | React + Babel, loaded from unpkg.com at runtime; a custom HTML templating engine (`support.js`) | Plain HTML/CSS/JS — no framework, no build step |
+| **Dependencies at runtime** | Needs internet access (unpkg.com CDN) even after the page loads | None — works offline after first load |
+| **Works via `file://`?** | No — needs an HTTP server | Yes |
+| **Maintainability** | Tied to the design tool's `<sc-if>`/`<sc-for>`/`DCLogic` dialect | Ordinary DOM/JS, approachable to any web developer |
+| **Risk** | Lowest — it's the exact build validated during design iteration | Rebuilt independently; see its README for anything simplified |
 
-**Read the chat transcripts first.** There are 1 chat transcript(s) in `chats/`. The transcripts show the full back-and-forth between the user and the design assistant — they tell you **what the user actually wants** and **where they landed** after iterating. Don't skip them. The final HTML files are the output, but the chat is where the intent lives.
+Both are pixel- and functionally-equivalent. Pick whichever you want to
+actually run — there's no need to keep both live long-term, they're just
+offered as two options. Each folder has its own README with more detail.
 
-**Read `project/github-pages-setup.md` in full.** The user had this file open when they triggered the handoff, so it's almost certainly the primary design they want built. Read it top to bottom — don't skim. Then **follow its imports**: open every file it pulls in (shared components, CSS, scripts) so you understand how the pieces fit together before you start implementing.
+## The four apps (in each build)
 
-**If anything is ambiguous, ask the user to confirm before you start implementing.** It's much cheaper to clarify scope up front than to build the wrong thing.
+- **Dog Walking Tracker** — the walker's app: home dashboard, client
+  list/detail with structured + free-form notes, live GPS-tracked walks
+  with a pee/poop counter and post-walk photo/share/payment logging,
+  payments (owed balances + package credits), and a sitting calendar with
+  daily task checklists. Clients sourced from Rover are flagged and routed
+  to the Rover app for messaging/booking instead of in-app.
+- **Pet Parent Portal** — a browser dashboard for clients: live walk
+  tracking, walk history with photos, payment balance (Venmo/Stripe),
+  message/call the walker, upcoming bookings.
+- **Pet Parent App** — the same portal, phone-first, with SMS
+  verification instead of a login form.
+- **Callie's Alpine Canine Website** — the public marketing site (Home,
+  Services, About, Contact with a booking form), linking into the portal
+  for existing clients.
 
-## About the design files
+## Deploying
 
-The design medium is **HTML/CSS/JS** — these are prototypes, not production code. Your job is to **recreate them pixel-perfectly** in whatever technology makes sense for the target codebase (React, Vue, native, whatever fits). Match the visual output; don't copy the prototype's internal structure unless it happens to fit.
+See `dc-runtime/github-pages-setup.md` for step-by-step GitHub Pages
+setup — it covers hosting this whole repo (both builds) from one Pages
+site, since each build lives in its own subfolder and the paths don't
+collide.
 
-**Don't render these files in a browser or take screenshots unless the user asks you to.** Everything you need — dimensions, colors, layout rules — is spelled out in the source. Read the HTML and CSS directly; a screenshot won't tell you anything they don't.
+Once live, apps are reachable at (for either build, swap the folder name):
 
-## Bundle contents
+- `https://USERNAME.github.io/REPO/dc-runtime/Dog%20Walking%20Tracker.dc.html`
+- `https://USERNAME.github.io/REPO/vanilla/Dog%20Walking%20Tracker.html`
+- (and similarly for the other three apps)
 
-- `README.md` — this file
-- `chats/` — conversation transcripts (read these!)
-- `project/` — the `Pet care tracking app` project files (HTML prototypes, assets, components)
+Each is installable to a phone home screen as a PWA (Chrome → menu → "Add
+to Home Screen").
+
+## Building an Android APK
+
+`dc-runtime/android-build-guide.md` covers wrapping the app in Capacitor
+for a real APK, or using PWABuilder against a hosted URL.
+`dc-runtime/capacitor.config.json` is a starting point.
+
+## Repo layout
+
+```
+chats/                   design conversation transcript
+dc-runtime/               build 1 — design tool output, patched for production
+vanilla/                  build 2 — plain HTML/CSS/JS rebuild
+```

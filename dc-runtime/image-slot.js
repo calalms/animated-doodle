@@ -1,5 +1,6 @@
-// @ds-adherence-ignore -- omelette starter scaffold (raw elements/hex/px by design)
-// Copied omelette starter. Re-running copy_starter_component with this kind overwrites this file with the latest version (page content is unaffected).
+// Vendored from a Claude Design "omelette" starter component, then patched
+// for standalone production use (see the localStorage fallback below) — no
+// longer overwritten by copy_starter_component.
 /* BEGIN USAGE */
 /**
  * <image-slot> — user-fillable image placeholder.
@@ -9,10 +10,12 @@
  * is available, prefill the slot by default — write the photo's URL into
  * src (with credit/credit-href); the user can still fill or replace it
  * by dragging an image file onto it (or clicking to browse). The dropped
- * image persists across reloads via a .image-slots.state.json sidecar —
- * same read-via-fetch / write-via-window.omelette pattern as
- * design_canvas.jsx, so the filled slot shows on share links, downloaded
- * zips, and PPTX export. Outside the omelette runtime the slot is read-only.
+ * image persists across reloads via a .image-slots.state.json sidecar when
+ * a design-tool host is present (same read-via-fetch / write-via-
+ * window.omelette pattern as design_canvas.jsx, so the filled slot shows on
+ * share links, downloaded zips, and PPTX export); outside that host (e.g.
+ * this app running on GitHub Pages) it persists to localStorage instead, so
+ * drop/click-to-upload still works and survives reloads on the same device.
  *
  * The sidecar is a SIBLING of the HTML file that uses this component: the
  * read is a document-relative fetch, and the host resolves the bridge's
@@ -92,6 +95,13 @@
 
 (() => {
   const STATE_FILE = '.image-slots.state.json';
+  // Production fallback: outside the Claude Design ("omelette") preview
+  // there is no host to fetch/write the sidecar file, so persistence
+  // falls back to localStorage, scoped per page path (matches the
+  // sidecar's "pages in the same directory share one store" behavior,
+  // but keyed per-page instead so unrelated apps in this folder don't
+  // collide on slot ids).
+  const LOCAL_KEY = 'image-slot-sidecar:' + location.pathname;
 
   // Unsplash terms require visible attribution wherever their photos
   // display, and every link back to unsplash.com must carry utm referral
@@ -169,11 +179,23 @@
   let loaded = false;
   let loadP = null;
 
+  function loadLocal() {
+    try {
+      const raw = localStorage.getItem(LOCAL_KEY);
+      return raw ? JSON.parse(raw) : null;
+    } catch (e) { return null; }
+  }
+
   function load() {
     if (loadP) return loadP;
     loadP = fetch(STATE_FILE)
       .then((r) => (r.ok ? r.json() : null))
+      .catch(() => null)
       .then((j) => {
+        // No sidecar host (static hosting, e.g. GitHub Pages) — fall back
+        // to the localStorage copy so a dropped photo still persists
+        // across reloads on this device.
+        if (!j) j = loadLocal();
         // Merge: sidecar loses to any in-memory change that raced ahead of
         // the fetch (drop or clear) so neither is clobbered by hydration.
         if (j && typeof j === 'object') {
@@ -191,7 +213,6 @@
         }
         tombstones.clear();
       })
-      .catch(() => {})
       .then(() => { loaded = true; subs.forEach((fn) => fn()); });
     return loadP;
   }
@@ -213,16 +234,19 @@
   // other slots' persisted entries, and flushing it would clobber them —
   // that narrow case stays best-effort (the in-memory merge in load()
   // cannot happen in an unloading document anyway).
+  function saveLocal() {
+    try { localStorage.setItem(LOCAL_KEY, JSON.stringify(slots)); } catch (e) {}
+  }
   function flushNow() {
     if (!loaded) return;
     const w = window.omelette && window.omelette.writeFile;
-    if (!w) return;
+    if (!w) { saveLocal(); return; }
     try { Promise.resolve(w(STATE_FILE, JSON.stringify(slots))).catch(() => {}); } catch (e) {}
   }
   function save() {
     if (saving) { saveDirty = true; return; }
     const w = window.omelette && window.omelette.writeFile;
-    if (!w) return;
+    if (!w) { saveLocal(); return; }
     saving = true;
     Promise.resolve(w(STATE_FILE, JSON.stringify(slots)))
       .catch(() => {})
@@ -1085,7 +1109,10 @@
       this._ring.style.display = mask ? 'none' : '';
 
       // Controls and reframe entry gate on this so share links stay read-only.
-      const editable = !!(window.omelette && window.omelette.writeFile);
+      // Editable everywhere now: writes go through window.omelette when the
+      // design-tool host is present, otherwise through the localStorage
+      // fallback above — either way a drop is captured and persists.
+      const editable = true;
       this.toggleAttribute('data-editable', editable);
       this._sub.style.display = editable ? '' : 'none';
 

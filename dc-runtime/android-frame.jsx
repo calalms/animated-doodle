@@ -1,5 +1,5 @@
-// @ds-adherence-ignore -- omelette starter scaffold (raw elements/hex/px by design)
-// Copied omelette starter. Re-running copy_starter_component with this kind overwrites this file with the latest version (page content is unaffected).
+// Vendored from a Claude Design "omelette" starter component (device frame
+// chrome only — no design-tool dependency, safe to ship as-is).
 
 /* BEGIN USAGE */
 // Android.jsx — Simplified Android (Material 3) device frame

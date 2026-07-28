@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dog Walking Tracker</title>
+<meta name="theme-color" content="#c67139">
+<meta name="description" content="Track dog walks with GPS, payments, and client management">
+<link rel="manifest" href="./manifest.json">
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%23f5ead8' width='192' height='192'/><circle cx='96' cy='70' r='28' fill='%237a8a5e'/><path d='M60 120 Q60 100 96 100 Q132 100 132 120 L132 150 Q132 165 120 165 L72 165 Q60 165 60 150 Z' fill='%23c67139'/><text x='96' y='50' font-size='36' font-family='sans-serif' text-anchor='middle' fill='%23c67139'>🐾</text></svg>">
+<link rel="stylesheet" href="styles.css">
+<style>
+  html,body{margin:0}
+  ::-webkit-scrollbar{width:0;height:0}
+  a{color:var(--color-accent)} a:hover{color:var(--color-accent-700)}
+  @keyframes pulseDot{0%,100%{opacity:1}50%{opacity:.35}}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="image-slot.js"></script>
+<script src="common.js"></script>
+<script src="walker-app.js"></script>
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js').catch(()=>{});
+}
+</script>
+</body>
+</html>

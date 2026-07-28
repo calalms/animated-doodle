@@ -1,5 +1,9 @@
 # GitHub + GitHub Pages Setup for Callie's Alpine Canine Apps
 
+This repo has two implementations of the same four apps — this guide covers
+hosting the whole repo (both implementations) on one GitHub Pages site. See
+the root `README.md` for how the `dc-runtime/` and `vanilla/` folders differ.
+
 ## Step 1: Create a GitHub Repository
 
 1. Go to https://github.com/new
@@ -7,8 +11,8 @@
 3. Choose **Public** (required for free GitHub Pages)
 4. **Do NOT** initialize with README, .gitignore, or license yet
 5. Click "Create repository"
-`
-## Step 2: Push Your Project to GitHub`
+
+## Step 2: Push Your Project to GitHub
 
 In your terminal, from your project root:
 
@@ -49,12 +53,15 @@ https://USERNAME.github.io/callies-alpine-canine/
 
 ## Step 4: Access Your Apps
 
-Once live, your apps are at:
+Once live, the "keep as-is" dc-runtime apps are at:
 
-- **Walker App**: `https://USERNAME.github.io/callies-alpine-canine/Dog%20Walking%20Tracker.dc.html`
-- **Pet Parent Portal**: `https://USERNAME.github.io/callies-alpine-canine/Pet%20Parent%20Portal.dc.html`
-- **Website**: `https://USERNAME.github.io/callies-alpine-canine/Callies%20Alpine%20Canine%20Website.dc.html`
-- **Pet Parent App**: `https://USERNAME.github.io/callies-alpine-canine/Pet%20Parent%20App.dc.html`
+- **Walker App**: `https://USERNAME.github.io/callies-alpine-canine/dc-runtime/Dog%20Walking%20Tracker.dc.html`
+- **Pet Parent Portal**: `https://USERNAME.github.io/callies-alpine-canine/dc-runtime/Pet%20Parent%20Portal.dc.html`
+- **Website**: `https://USERNAME.github.io/callies-alpine-canine/dc-runtime/Callies%20Alpine%20Canine%20Website.dc.html`
+- **Pet Parent App**: `https://USERNAME.github.io/callies-alpine-canine/dc-runtime/Pet%20Parent%20App.dc.html`
+
+The vanilla (no-runtime) rebuild of the same four apps lives at the same
+paths under `vanilla/` instead — see `vanilla/README.md`.
 
 ## Step 5: Add to Your Phone
 
@@ -90,11 +97,14 @@ GitHub automatically redeploys in ~1 minute.
 
 **404 errors on assets?**
 - Make sure CSS/JS/image files are also committed and pushed
-- Check the file paths in your HTML match the GitHub folder structure
+- Check the file paths in your HTML match the GitHub folder structure (this variant's apps expect `support.js`, `image-slot.js`, `android-frame.jsx`, `browser-window.jsx`, and `_ds/` to sit next to the `.dc.html` files, inside `dc-runtime/`)
 
 **PWA not installing?**
-- Verify `manifest.json` and `pet-parent-manifest.json` are in the root of your repo
+- Verify `dc-runtime/manifest.json` and `dc-runtime/pet-parent-manifest.json` are committed and pushed
 - Clear browser cache and reload the page
 
 **"Settings button not working"**
 - GitHub Pages requires HTTPS (automatically enabled) — refresh the page
+
+**Blank page / stuck on a loading shimmer?**
+- This variant loads React, ReactDOM, and Babel from unpkg.com at runtime — it needs an internet connection even after the page itself loads. If you're offline or the CDN is blocked, use the `vanilla/` variant instead, which has no such dependency.
