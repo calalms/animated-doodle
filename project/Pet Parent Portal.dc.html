@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/organic-87ffd064-5422-4a4f-a0f2-3fdbdfe1d5dd/styles.css">
+<script src="_ds/organic-87ffd064-5422-4a4f-a0f2-3fdbdfe1d5dd/_ds_bundle.js"></script>
+<script src="./image-slot.js"></script>
+<style>
+  body{margin:0}
+  ::-webkit-scrollbar{width:0;height:0}
+  a{color:var(--color-accent)} a:hover{color:var(--color-accent-700)}
+  @keyframes pulseDot{0%,100%{opacity:1}50%{opacity:.35}}
+</style>
+</helmet>
+
+<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:44px;background:var(--color-neutral-200);box-sizing:border-box;font-family:var(--font-body)">
+<x-import component-from-global-scope="AndroidDevice" from="./android-frame.jsx" hint-size="412px,892px">
+<div style="width:100%;height:100%;background:var(--color-bg);display:flex;flex-direction:column;color:var(--color-text);overflow:hidden;position:relative">
+
+<!-- ============ LOGIN ============ -->
+<sc-if value="{{ isLogin }}" hint-placeholder-val="{{ true }}">
+<div style="flex:1;display:flex;flex-direction:column;justify-content:center;padding:32px;gap:18px">
+  <div style="text-align:center;margin-bottom:6px">
+    <div style="width:64px;height:64px;border-radius:50%;background:var(--color-accent-2-200);color:var(--color-accent-2-800);display:flex;align-items:center;justify-content:center;font-family:var(--font-heading);font-size:24px;margin:0 auto 12px">🐾</div>
+    <h2 style="margin:0">Callie's Alpine Canine</h2>
+    <div style="font-size:12.5px;opacity:.65">Pet parent portal</div>
+  </div>
+  <div class="field"><label>Email</label><input class="input" value="{{ loginEmail }}" onChange="{{ setLoginEmail }}" placeholder="you@email.com"/></div>
+  <div class="field"><label>Password</label><input class="input" type="password" value="{{ loginPassword }}" onChange="{{ setLoginPassword }}" placeholder="••••••••"/></div>
+  <button class="btn btn-primary btn-block" style="height:50px;margin-top:4px" onClick="{{ doLogin }}">Log in</button>
+  <div style="text-align:center;font-size:12px;opacity:.6">Forgot password? · New client? <a href="#">Get started</a></div>
+</div>
+</sc-if>
+
+<!-- ============ HOME ============ -->
+<sc-if value="{{ isHome }}">
+<div style="flex:1;overflow-y:auto;padding:22px 20px 90px;display:flex;flex-direction:column;gap:16px">
+  <div style="display:flex;align-items:center;justify-content:space-between">
+    <div>
+      <div style="font-size:12px;opacity:.6">Hi Maria 👋</div>
+      <h2 style="margin:2px 0 0">Biscuit's day</h2>
+    </div>
+    <div style="width:44px;height:44px;border-radius:50%;background:var(--color-accent-2-200);color:var(--color-accent-2-800);display:flex;align-items:center;justify-content:center;font-family:var(--font-heading)">B</div>
+  </div>
+
+  <sc-if value="{{ walkIsLive }}">
+    <div class="card elev-md" style="gap:8px;cursor:pointer" onClick="{{ goWalkLive }}">
+      <div style="display:flex;align-items:center;gap:8px">
+        <span class="tag tag-accent" style="animation:pulseDot 1.4s infinite">● Live now</span>
+        <span class="card-title" style="font-size:15px">Ash is walking Biscuit</span>
+      </div>
+      <div style="font-size:12.5px;opacity:.7">Started {{ walkStartedLabel }} · tap to watch live</div>
+    </div>
+  </sc-if>
+
+  <div class="card elev-sm" style="background:var(--color-accent-100)">
+    <div class="card-kicker">Your package</div>
+    <div style="display:flex;align-items:baseline;gap:8px">
+      <h1 style="margin:0;font-size:32px">{{ walksLeft }}/{{ packageTotal }}</h1>
+      <span style="font-size:13px;opacity:.7">walks remaining</span>
+    </div>
+    <div style="height:6px;border-radius:999px;background:var(--color-neutral-300);overflow:hidden;margin-top:2px">
+      <div style="height:100%;border-radius:999px;background:var(--color-accent-600);width:{{ packagePct }}%"></div>
+    </div>
+  </div>
+
+  <sc-if value="{{ hasBalance }}">
+    <div class="card elev-sm" style="flex-direction:row;align-items:center;gap:10px">
+      <div style="flex:1">
+        <div class="card-title" style="font-size:14px">${{ balance }} due</div>
+        <div style="font-size:11.5px;opacity:.65">For your last sitting</div>
+      </div>
+      <button class="btn btn-primary" onClick="{{ goPay }}">Pay now</button>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ hasUpcoming }}">
+    <div>
+      <h5 style="margin:0 0 8px">Upcoming</h5>
+      <div class="card elev-sm" style="gap:4px">
+        <div style="font-size:13px;font-weight:600">{{ upcomingRange }} · Sitting</div>
+        <div style="font-size:12px;opacity:.65">{{ upcomingNote }}</div>
+      </div>
+    </div>
+  </sc-if>
+
+  <div style="display:flex;gap:10px">
+    <button class="btn btn-secondary" style="flex:1;height:48px" onClick="{{ goMessage }}">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+      Message Ash
+    </button>
+    <button class="btn btn-secondary" style="flex:1;height:48px" onClick="{{ goHistory }}">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+      Walk history
+    </button>
+  </div>
+</div>
+</sc-if>
+
+<!-- ============ WALK LIVE ============ -->
+<sc-if value="{{ isWalkLive }}">
+<div style="flex:1;position:relative;overflow:hidden">
+  <iframe title="Live map" src="{{ mapEmbedUrl }}" style="position:absolute;inset:0;width:100%;height:100%;border:0" loading="lazy" class="washed"></iframe>
+  <svg width="100%" height="100%" viewBox="0 0 412 700" style="position:absolute;inset:0;pointer-events:none">
+    <polyline points="{{ routePoints }}" fill="none" stroke="var(--color-accent-700)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" opacity="0.85"></polyline>
+    <circle cx="{{ routeEnd.x }}" cy="{{ routeEnd.y }}" r="8" fill="var(--color-accent-700)"></circle>
+  </svg>
+  <div style="position:absolute;top:16px;left:16px;right:16px;display:flex;align-items:center;gap:8px">
+    <button class="btn btn-icon btn-secondary" style="background:var(--color-bg)" onClick="{{ goHome }}">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+    </button>
+    <span class="tag tag-accent" style="animation:pulseDot 1.4s infinite">● Live</span>
+    <span style="font-size:12.5px;font-weight:600;background:var(--color-bg);padding:4px 10px;border-radius:999px">Biscuit with Ash</span>
+  </div>
+  <div style="position:absolute;left:0;right:0;bottom:0;background:var(--color-bg);border-radius:24px 24px 0 0;box-shadow:var(--shadow-lg);padding:20px;display:flex;flex-direction:column;gap:12px">
+    <div style="display:flex;justify-content:space-around;text-align:center">
+      <div><div style="font-family:var(--font-heading);font-size:24px">{{ elapsedLabel }}</div><div style="font-size:11px;opacity:.6">time</div></div>
+      <div><div style="font-family:var(--font-heading);font-size:24px">{{ distanceLabel }}</div><div style="font-size:11px;opacity:.6">distance</div></div>
+    </div>
+    <button class="btn btn-secondary btn-block" style="margin-top:0" onClick="{{ goMessage }}">Message Ash</button>
+  </div>
+</div>
+</sc-if>
+
+<!-- ============ HISTORY ============ -->
+<sc-if value="{{ isHistory }}">
+<div style="flex:1;overflow-y:auto;padding:22px 20px 90px;display:flex;flex-direction:column;gap:14px">
+  <div style="display:flex;align-items:center;gap:10px">
+    <button class="btn btn-icon btn-secondary" onClick="{{ goHome }}">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+    </button>
+    <h3 style="margin:0">Walk history</h3>
+  </div>
+  <sc-for list="{{ history }}" as="h" hint-placeholder-count="3">
+    <div class="card elev-sm" style="gap:8px">
+      <image-slot id="{{ h.photoId }}" shape="rounded" style="width:100%;height:140px" placeholder="Drop a photo from this walk"></image-slot>
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div style="font-size:13px;font-weight:600">{{ h.date }} · {{ h.duration }}</div>
+        <span class="tag tag-accent-2">{{ h.distance }}</span>
+      </div>
+      <div style="font-size:12.5px;opacity:.8">{{ h.note }}</div>
+    </div>
+  </sc-for>
+</div>
+</sc-if>
+
+<!-- ============ CALENDAR ============ -->
+<sc-if value="{{ isCalendar }}">
+<div style="flex:1;overflow-y:auto;padding:22px 20px 90px;display:flex;flex-direction:column;gap:16px">
+  <h2 style="margin:0">Schedule</h2>
+  <div class="card elev-sm" style="gap:4px">
+    <div class="card-kicker">Recurring walks</div>
+    <div class="card-title" style="font-size:15px">{{ recurringLabel }}</div>
+  </div>
+  <sc-if value="{{ hasUpcoming }}">
+    <div class="card elev-sm" style="gap:4px">
+      <div class="card-kicker">Sitting booked</div>
+      <div class="card-title" style="font-size:15px">{{ upcomingRange }}</div>
+      <div style="font-size:12px;opacity:.65">{{ upcomingNote }}</div>
+    </div>
+  </sc-if>
+</div>
+</sc-if>
+
+<!-- ============ PAY ============ -->
+<sc-if value="{{ isPay }}">
+<div style="flex:1;overflow-y:auto;padding:22px 20px 90px;display:flex;flex-direction:column;gap:16px">
+  <div style="display:flex;align-items:center;gap:10px">
+    <button class="btn btn-icon btn-secondary" onClick="{{ goHome }}">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+    </button>
+    <h3 style="margin:0">Payments</h3>
+  </div>
+  <div class="card elev-sm" style="background:var(--color-accent-100)">
+    <div class="card-kicker">Balance due</div>
+    <h1 style="margin:0;font-size:32px">${{ balance }}</h1>
+  </div>
+  <a class="btn btn-block" style="height:52px;background:#3D95CE;color:#fff;text-decoration:none" href="{{ venmoUrl }}" target="_blank" rel="noopener">
+    Pay with Venmo
+  </a>
+  <a class="btn btn-secondary btn-block" style="height:52px;text-decoration:none" href="{{ stripeUrl }}" target="_blank" rel="noopener">
+    Pay by card (Stripe)
+  </a>
+  <div style="font-size:11.5px;opacity:.6;text-align:center">Opens Venmo or a secure Stripe checkout</div>
+  <div>
+    <h5 style="margin:16px 0 8px">Buy another package</h5>
+    <div class="card elev-sm" style="flex-direction:row;align-items:center;gap:10px">
+      <div style="flex:1">
+        <div class="card-title" style="font-size:14px">10 walks · $200</div>
+        <div style="font-size:11.5px;opacity:.65">Save $20 vs. per-walk rate</div>
+      </div>
+      <a class="btn btn-primary" style="text-decoration:none" href="{{ venmoPackageUrl }}" target="_blank" rel="noopener">Buy</a>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+<!-- ============ MESSAGE ============ -->
+<sc-if value="{{ isMessage }}">
+<div style="flex:1;overflow-y:auto;padding:22px 20px 90px;display:flex;flex-direction:column;gap:16px">
+  <div style="display:flex;align-items:center;gap:10px">
+    <button class="btn btn-icon btn-secondary" onClick="{{ goHome }}">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+    </button>
+    <h3 style="margin:0">Message Ash</h3>
+  </div>
+  <div class="card elev-sm" style="flex-direction:row;align-items:center;gap:12px">
+    <div style="width:44px;height:44px;border-radius:50%;background:var(--color-accent-2-200);color:var(--color-accent-2-800);display:flex;align-items:center;justify-content:center;font-family:var(--font-heading)">A</div>
+    <div>
+      <div style="font-size:14px;font-weight:600">Ash — your walker</div>
+      <div style="font-size:12px;opacity:.65">Usually replies within an hour</div>
+    </div>
+  </div>
+  <a class="btn btn-primary btn-block" style="height:50px;text-decoration:none" href="{{ smsUrl }}">Send a text</a>
+  <a class="btn btn-secondary btn-block" style="height:50px;text-decoration:none" href="{{ telUrl }}">Call Ash</a>
+</div>
+</sc-if>
+
+<!-- ============ BOTTOM NAV ============ -->
+<sc-if value="{{ showBottomNav }}">
+<div style="display:flex;border-top:1px solid var(--color-divider);background:var(--color-bg);padding:8px 4px 10px">
+  <button onClick="{{ goHome }}" style="flex:1;background:none;border:none;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;color:{{ navColor.home }}">
+    <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"></path><path d="M5 9.5V20a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V9.5"></path></svg>
+    <span style="font-size:10px">Home</span>
+  </button>
+  <button onClick="{{ goHistory }}" style="flex:1;background:none;border:none;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;color:{{ navColor.history }}">
+    <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+    <span style="font-size:10px">History</span>
+  </button>
+  <button onClick="{{ goCalendar }}" style="flex:1;background:none;border:none;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;color:{{ navColor.calendar }}">
+    <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="3"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+    <span style="font-size:10px">Schedule</span>
+  </button>
+  <button onClick="{{ goPay }}" style="flex:1;background:none;border:none;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;color:{{ navColor.pay }}">
+    <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-1"></path><path d="M17 12h4v4h-4z"></path></svg>
+    <span style="font-size:10px">Pay</span>
+  </button>
+</div>
+</sc-if>
+
+</div>
+</x-import>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = {
+    screen: 'login', loginEmail: '', loginPassword: '',
+    walk: { elapsed: 612, distanceMi: 1.1, path: [[40,340],[70,320],[95,290],[120,270],[150,250],[170,220],[190,190]] },
+  };
+
+  componentDidMount(){
+    this.timer = setInterval(()=>{
+      this.setState(s=>{
+        const last=s.walk.path[s.walk.path.length-1];
+        const nx=Math.max(20,Math.min(392,last[0]+(Math.random()*30-10)));
+        const ny=Math.max(60,Math.min(660,last[1]-(4+Math.random()*8)));
+        const path=[...s.walk.path,[nx,ny]].slice(-60);
+        return {walk:{...s.walk, elapsed:s.walk.elapsed+1, distanceMi:s.walk.distanceMi+0.006+Math.random()*0.005, path}};
+      });
+    },1000);
+  }
+  componentWillUnmount(){ if(this.timer) clearInterval(this.timer); }
+
+  setLoginEmail=(e)=>this.setState({loginEmail:e.target.value});
+  setLoginPassword=(e)=>this.setState({loginPassword:e.target.value});
+  doLogin=()=>this.setState({screen:'home'});
+  goHome=()=>this.setState({screen:'home'});
+  goHistory=()=>this.setState({screen:'history'});
+  goCalendar=()=>this.setState({screen:'calendar'});
+  goPay=()=>this.setState({screen:'pay'});
+  goMessage=()=>this.setState({screen:'message'});
+  goWalkLive=()=>this.setState({screen:'walkLive'});
+
+  fmtTime(sec){const m=Math.floor(sec/60),s=sec%60;return String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');}
+
+  renderVals(){
+    const s=this.state;
+    const w=s.walk;
+    const screen=s.screen;
+    const packageTotal=10, packageUsed=6, walksLeft=packageTotal-packageUsed;
+    const balance=45;
+
+    return {
+      isLogin: screen==='login', isHome: screen==='home', isWalkLive: screen==='walkLive',
+      isHistory: screen==='history', isCalendar: screen==='calendar', isPay: screen==='pay', isMessage: screen==='message',
+      showBottomNav: ['home','history','calendar','pay'].includes(screen),
+      navColor: {
+        home: screen==='home' ? 'var(--color-accent-700)' : 'var(--color-neutral-600)',
+        history: screen==='history' ? 'var(--color-accent-700)' : 'var(--color-neutral-600)',
+        calendar: screen==='calendar' ? 'var(--color-accent-700)' : 'var(--color-neutral-600)',
+        pay: screen==='pay' ? 'var(--color-accent-700)' : 'var(--color-neutral-600)',
+      },
+      loginEmail:s.loginEmail, loginPassword:s.loginPassword, setLoginEmail:this.setLoginEmail, setLoginPassword:this.setLoginPassword, doLogin:this.doLogin,
+      goHome:this.goHome, goHistory:this.goHistory, goCalendar:this.goCalendar, goPay:this.goPay, goMessage:this.goMessage, goWalkLive:this.goWalkLive,
+      walkIsLive: true, walkStartedLabel: '10 minutes ago',
+      packageTotal, walksLeft, packagePct: (walksLeft/packageTotal)*100,
+      hasBalance: balance>0, balance,
+      hasUpcoming: true, upcomingRange: 'Aug 3 – Aug 5', upcomingNote: '214 Willow St · daily feed, walk & yard check',
+      recurringLabel: 'Tuesdays, Thursdays & Fridays, afternoons',
+      mapEmbedUrl: 'https://maps.google.com/maps?q='+encodeURIComponent('214 Willow St')+'&z=15&output=embed',
+      routePoints: w.path.map(p=>p[0]+','+p[1]).join(' '),
+      routeEnd: {x:w.path[w.path.length-1][0], y:w.path[w.path.length-1][1]},
+      elapsedLabel: this.fmtTime(w.elapsed), distanceLabel: w.distanceMi.toFixed(2)+' mi',
+      history: [
+        {photoId:'ph-hist-1', date:'Jul 27', duration:'32 min', distance:'1.8 mi', note:'Great walk, met the neighbor dog fine.'},
+        {photoId:'ph-hist-2', date:'Jul 24', duration:'28 min', distance:'1.5 mi', note:'Stopped to sniff every mailbox on Willow St 🐾'},
+        {photoId:'ph-hist-3', date:'Jul 20', duration:'30 min', distance:'1.6 mi', note:'A little tired today, took it slow.'},
+      ],
+      venmoUrl: 'https://venmo.com/u/CalliesAlpineCanine?txn=pay&amount='+balance+'&note='+encodeURIComponent('Dog walking - Biscuit'),
+      venmoPackageUrl: 'https://venmo.com/u/CalliesAlpineCanine?txn=pay&amount=200&note='+encodeURIComponent('10-walk package - Biscuit'),
+      stripeUrl: 'https://checkout.stripe.com/pay/callies-alpine-canine',
+      smsUrl: 'sms:+15550401001?body='+encodeURIComponent("Hi Ash, it's Maria — "),
+      telUrl: 'tel:+15550401001',
+    };
+  }
+}
+</script>
+</body>
+</html>

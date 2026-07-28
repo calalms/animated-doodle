@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="theme-color" content="#c67139">
+<meta name="description" content="Track dog walks with GPS, payments, and client management">
+<link rel="manifest" href="./manifest.json">
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%23f5ead8' width='192' height='192'/><circle cx='96' cy='70' r='28' fill='%237a8a5e'/><path d='M60 120 Q60 100 96 100 Q132 100 132 120 L132 150 Q132 165 120 165 L72 165 Q60 165 60 150 Z' fill='%23c67139'/><text x='96' y='50' font-size='36' font-family='sans-serif' text-anchor='middle' fill='%23c67139'>🐾</text></svg>">
+<link rel="stylesheet" href="_ds/organic-87ffd064-5422-4a4f-a0f2-3fdbdfe1d5dd/styles.css">
+<script src="_ds/organic-87ffd064-5422-4a4f-a0f2-3fdbdfe1d5dd/_ds_bundle.js"></script>
+<script src="./image-slot.js"></script>
+<style>
+  body{margin:0}
+  ::-webkit-scrollbar{width:0;height:0}
+  a{color:var(--color-accent)} a:hover{color:var(--color-accent-700)}
+  @keyframes pulseDot{0%,100%{opacity:1}50%{opacity:.35}}
+</style>
+<script>
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('data:application/javascript,const CACHE="v1";self.addEventListener("install",e=>e.waitUntil(caches.open(CACHE)));self.addEventListener("fetch",e=>{if(e.request.method==="GET")e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).then(r=>{caches.open(CACHE).then(c=>c.put(e.request,r.clone()));return r;})))});')
+    .catch(()=>{});
+}
+</script>
+</helmet>
+
+<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:44px;background:var(--color-neutral-200);box-sizing:border-box;font-family:var(--font-body)">
+<x-import component-from-global-scope="AndroidDevice" from="./android-frame.jsx" hint-size="412px,892px">
+<div style="width:100%;height:100%;background:var(--color-bg);display:flex;flex-direction:column;color:var(--color-text);overflow:hidden;position:relative">
+
+<!-- ============ HOME ============ -->
+<sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+<div style="flex:1;overflow-y:auto;padding:22px 20px 12px;display:flex;flex-direction:column;gap:18px">
+  <div style="display:flex;align-items:center;justify-content:space-between">
+    <div>
+      <div style="font-size:12px;color:color-mix(in srgb,var(--color-text) 55%,transparent)">{{ todayLabel }}</div>
+      <h2 style="margin:2px 0 0">Good morning, Ash</h2>
+    </div>
+    <div style="width:42px;height:42px;border-radius:50%;background:var(--color-accent-2-200);display:flex;align-items:center;justify-content:center;color:var(--color-accent-2-800);font-family:var(--font-heading)">A</div>
+  </div>
+
+  <div class="card elev-sm" style="background:var(--color-accent-100)">
+    <div class="card-kicker">This week</div>
+    <div style="display:flex;align-items:baseline;gap:8px">
+      <h1 style="margin:0;font-size:36px">${{ weeklyEarnings }}</h1>
+      <span style="font-size:13px;opacity:.7">earned</span>
+    </div>
+    <div style="display:flex;gap:16px;margin-top:2px">
+      <div style="font-size:12px"><strong>{{ walksCompleted }}</strong> walks</div>
+      <div style="font-size:12px"><strong>{{ activeSittingsCount }}</strong> sittings active</div>
+    </div>
+  </div>
+
+  <div style="display:flex;gap:10px">
+    <button class="btn btn-primary btn-block" style="height:52px;font-size:15px;flex:1;margin-top:0" onClick="{{ openWalkPicker }}">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+      Start a walk
+    </button>
+    <button class="btn btn-secondary" style="height:52px;width:52px;flex:none;padding:0" onClick="{{ openAddClient }}">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+    </button>
+  </div>
+
+  <sc-if value="{{ showWalkPicker }}">
+    <div class="card elev-md" style="gap:var(--space-2)">
+      <div class="card-title" style="font-size:14px">Who are you walking?</div>
+      <sc-for list="{{ clients }}" as="c" hint-placeholder-count="3">
+        <div style="display:flex;align-items:center;gap:10px;padding:6px 2px;cursor:pointer" onClick="{{ c.pickForWalk }}">
+          <div style="width:32px;height:32px;border-radius:50%;background:var(--color-accent-2-200);color:var(--color-accent-2-800);display:flex;align-items:center;justify-content:center;font-size:13px;font-family:var(--font-heading);flex:none">{{ c.initial }}</div>
+          <div style="font-size:13px;flex:1">{{ c.name }} · {{ c.pet }}</div>
+          <sc-if value="{{ c.isRover }}"><span class="tag tag-outline">Rover</span></sc-if>
+        </div>
+      </sc-for>
+      <button class="btn btn-ghost" style="align-self:flex-start" onClick="{{ closeWalkPicker }}">Cancel</button>
+    </div>
+  </sc-if>
+
+  <div>
+    <h4 style="margin:0 0 8px">Today</h4>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <sc-for list="{{ todaySchedule }}" as="t" hint-placeholder-count="3">
+        <div class="card elev-sm" style="flex-direction:row;align-items:center;gap:12px">
+          <div style="font-family:var(--font-heading);font-size:13px;color:var(--color-accent-700);width:56px;flex:none">{{ t.time }}</div>
+          <div style="width:34px;height:34px;border-radius:50%;background:var(--color-accent-2-200);color:var(--color-accent-2-800);display:flex;align-items:center;justify-content:center;font-size:12px;font-family:var(--font-heading);flex:none">{{ t.petInitial }}</div>
+          <div style="flex:1">
+            <div style="font-size:13px;font-weight:600">{{ t.name }} · {{ t.pet }}</div>
+            <div style="font-size:11px;opacity:.65">{{ t.type }}</div>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+
+  <div>
+    <h4 style="margin:0 0 8px">Reminders</h4>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <sc-for list="{{ reminders }}" as="r" hint-placeholder-count="2">
+        <div class="card elev-sm" style="flex-direction:row;align-items:center;gap:10px">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent-700)" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round" style="flex:none;cursor:pointer" onClick="{{ r.open }}"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+          <div style="font-size:12.5px;flex:1;cursor:pointer" onClick="{{ r.open }}">{{ r.text }}</div>
+          <sc-if value="{{ r.renew }}"><button class="btn btn-secondary" style="font-size:11px;padding:4px 10px" onClick="{{ r.renew }}">Renew</button></sc-if>
+          <span class="tag tag-accent">{{ r.tagText }}</span>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+<!-- ============ CLIENTS LIST ============ -->
+<sc-if value="{{ isClients }}">
+<div style="flex:1;overflow-y:auto;padding:22px 20px 90px;display:flex;flex-direction:column;gap:14px">
+  <h2 style="margin:0">Clients</h2>
+  <input class="input" placeholder="Search clients or pets" value="{{ search }}" onChange="{{ setSearch }}"/>
+  <div style="display:flex;flex-direction:column;gap:10px">
+    <sc-for list="{{ filteredClients }}" as="c" hint-placeholder-count="6">
+      <div class="card elev-sm" style="flex-direction:row;align-items:center;gap:12px;cursor:pointer" onClick="{{ c.open }}">
+        <div style="width:44px;height:44px;border-radius:50%;background:var(--color-accent-2-200);color:var(--color-accent-2-800);display:flex;align-items:center;justify-content:center;font-family:var(--font-heading);font-size:16px;flex:none">{{ c.initial }}</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:14px;font-weight:600">{{ c.name }}</div>
+          <div style="font-size:12px;opacity:.65">{{ c.pet }} · {{ c.breed }}</div>
+        </div>
+        <sc-if value="{{ c.isRover }}"><span class="tag tag-outline">Rover</span></sc-if>
+        <span class="tag {{ c.tagClass }}">{{ c.tagText }}</span>
+      </div>
+    </sc-for>
+  </div>
+</div>
+<button onClick="{{ openAddClient }}" style="position:absolute;right:20px;bottom:88px;width:52px;height:52px;border-radius:50%;background:var(--color-accent);color:var(--color-bg);border:none;box-shadow:var(--shadow-lg);display:flex;align-items:center;justify-content:center;cursor:pointer">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+</button>
+</sc-if>
+
+<!-- ============ CLIENT DETAIL ============ -->
+<sc-if value="{{ isClientDetail }}">
+<div style="flex:1;overflow-y:auto;padding:18px 20px 24px;display:flex;flex-direction:column;gap:16px">
+  <div style="display:flex;align-items:center;gap:10px">
+    <button class="btn btn-icon btn-secondary" onClick="{{ backToClients }}">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+    </button>
+    <h3 style="margin:0">{{ selClient.name }}</h3>
+    <sc-if value="{{ selClient.isRover }}"><span class="tag tag-outline">Rover</span></sc-if>
+  </div>
+
+  <sc-if value="{{ selClient.isRover }}">
+    <div class="card elev-sm" style="background:var(--color-accent-2-100);flex-direction:row;align-items:center;gap:8px">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent-2-800)" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+      <div style="font-size:12px">Booked via Rover — message this client in the Rover app.</div>
+    </div>
+  </sc-if>
+
+  <div class="card elev-sm" style="flex-direction:row;align-items:center;gap:12px">
+    <div style="width:48px;height:48px;border-radius:50%;background:var(--color-accent-2-200);color:var(--color-accent-2-800);display:flex;align-items:center;justify-content:center;font-family:var(--font-heading);font-size:18px;flex:none">{{ selClient.initial }}</div>
+    <div style="flex:1">
+      <div style="font-size:14px;font-weight:600">{{ selClient.pet }} · {{ selClient.breed }}</div>
+      <div style="font-size:12px;opacity:.7">{{ selClient.address }}</div>
+    </div>
+  </div>
+
+  <div style="display:flex;gap:10px">
+    <div class="card elev-sm" style="flex:1;gap:2px">
+      <div class="card-kicker">Rate</div>
+      <div style="font-family:var(--font-heading);font-size:16px">{{ selClient.rateLabel }}</div>
+    </div>
+    <div class="card elev-sm" style="flex:1;gap:2px">
+      <div class="card-kicker">Balance</div>
+      <div style="font-family:var(--font-heading);font-size:16px;color:{{ selClient.balanceColor }}">{{ selClient.balanceLabel }}</div>
+    </div>
+  </div>
+
+  <div style="display:flex;gap:10px">
+    <sc-if value="{{ selClient.isRover }}"><a class="btn btn-primary" style="flex:1;text-decoration:none" href="{{ roverUrl }}" target="_blank" rel="noopener">Start walk in Rover</a></sc-if>
+    <sc-if value="{{ selClient.isNotRover }}"><button class="btn btn-primary" style="flex:1" onClick="{{ selClient.startWalk }}">Start walk</button></sc-if>
+    <sc-if value="{{ selClient.showMarkPaid }}"><button class="btn btn-secondary" style="flex:1" onClick="{{ selClient.markPaid }}">Mark paid</button></sc-if>
+  </div>
+  <a class="btn btn-secondary btn-block" style="text-decoration:none;margin-top:0" href="{{ selClient.messageUrl }}" target="_blank" rel="noopener">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+    {{ selClient.messageLabel }}
+  </a>
+
+  <div>
+    <h5 style="margin:0 0 8px">Care notes</h5>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      <div class="card elev-sm" style="gap:3px"><div class="card-kicker">Access</div><div style="font-size:12.5px">{{ selClient.notes.access }}</div></div>
+      <div class="card elev-sm" style="gap:3px"><div class="card-kicker">Feeding</div><div style="font-size:12.5px">{{ selClient.notes.feeding }}</div></div>
+      <div class="card elev-sm" style="gap:3px"><div class="card-kicker">Medical</div><div style="font-size:12.5px">{{ selClient.notes.medical }}</div></div>
+      <div class="card elev-sm" style="gap:3px"><div class="card-kicker">Behavior</div><div style="font-size:12.5px">{{ selClient.notes.behavior }}</div></div>
+    </div>
+  </div>
+
+  <div>
+    <h5 style="margin:0 0 8px">Log</h5>
+    <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:8px">
+      <sc-for list="{{ selClient.log }}" as="l" hint-placeholder-count="2">
+        <div style="font-size:12.5px;padding:8px 10px;background:var(--color-surface);border-radius:var(--radius-md)"><strong style="opacity:.6;font-weight:600">{{ l.date }} —</strong> {{ l.text }}</div>
+      </sc-for>
+    </div>
+    <div style="display:flex;gap:8px">
+      <input class="input" placeholder="Add a note…" value="{{ noteDraft }}" onChange="{{ setNoteDraft }}"/>
+      <button class="btn btn-secondary" onClick="{{ addNote }}">Add</button>
+    </div>
+  </div>
+
+  <sc-if value="{{ selClient.hasSitting }}">
+    <div>
+      <h5 style="margin:0 0 8px">Upcoming sitting</h5>
+      <div class="card elev-sm" style="gap:6px">
+        <div style="font-size:13px;font-weight:600">{{ selClient.sitting.range }}</div>
+        <div style="font-size:12px;opacity:.7">{{ selClient.address }}</div>
+      </div>
+    </div>
+  </sc-if>
+
+  <div>
+    <h5 style="margin:0 0 8px">Walk history</h5>
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <sc-for list="{{ selClient.walks }}" as="w" hint-placeholder-count="2">
+        <div style="display:flex;align-items:center;gap:10px;font-size:12.5px;padding:8px 10px;background:var(--color-surface);border-radius:var(--radius-md)">
+          <div style="width:60px;flex:none;opacity:.65">{{ w.date }}</div>
+          <div style="flex:1">{{ w.duration }} · {{ w.distance }}</div>
+          <span class="tag {{ w.tagClass }}">{{ w.tagText }}</span>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+<!-- ============ WALK ACTIVE ============ -->
+<sc-if value="{{ isWalkActive }}">
+<div style="flex:1;position:relative;overflow:hidden;background:var(--color-accent-2-100)">
+  <iframe title="Live map" src="{{ mapEmbedUrl }}" style="position:absolute;inset:0;width:100%;height:100%;border:0" loading="lazy" class="washed"></iframe>
+  <svg width="100%" height="100%" viewBox="0 0 412 700" style="position:absolute;inset:0;pointer-events:none">
+    <polyline points="{{ routePoints }}" fill="none" stroke="var(--color-accent-700)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" opacity="0.85"></polyline>
+    <circle cx="{{ routeStart.x }}" cy="{{ routeStart.y }}" r="7" fill="var(--color-accent-2-700)"></circle>
+    <circle cx="{{ routeEnd.x }}" cy="{{ routeEnd.y }}" r="8" fill="var(--color-accent-700)"></circle>
+  </svg>
+  <div style="position:absolute;top:16px;left:16px;right:16px;display:flex;align-items:center;gap:8px">
+    <button class="btn btn-icon btn-secondary" style="background:var(--color-bg);flex:none" onClick="{{ cancelWalk }}">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+    </button>
+    <span class="tag tag-accent" style="animation:pulseDot 1.4s infinite">● Live</span>
+    <span style="font-size:12.5px;font-weight:600;background:var(--color-bg);padding:4px 10px;border-radius:999px">{{ walkClientName }}</span>
+  </div>
+  <div style="position:absolute;top:60px;left:16px;display:flex;align-items:center;gap:5px;background:var(--color-bg);padding:4px 10px;border-radius:999px;font-size:11px;opacity:.75">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent-2-700)" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"></path><path d="M1.42 9a16 16 0 0 1 21.16 0"></path><path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path><line x1="12" y1="20" x2="12" y2="20"></line></svg>
+    Live map · GPS paired
+  </div>
+  <div style="position:absolute;left:0;right:0;bottom:0;background:var(--color-bg);border-radius:24px 24px 0 0;box-shadow:var(--shadow-lg);padding:20px;display:flex;flex-direction:column;gap:14px">
+    <div style="display:flex;justify-content:space-around;text-align:center">
+      <div><div style="font-family:var(--font-heading);font-size:26px">{{ elapsedLabel }}</div><div style="font-size:11px;opacity:.6">time</div></div>
+      <div><div style="font-family:var(--font-heading);font-size:26px">{{ distanceLabel }}</div><div style="font-size:11px;opacity:.6">distance</div></div>
+      <div><div style="font-family:var(--font-heading);font-size:26px">{{ paceLabel }}</div><div style="font-size:11px;opacity:.6">pace /mi</div></div>
+    </div>
+    <div style="display:flex;gap:10px">
+      <div style="flex:1;display:flex;align-items:center;justify-content:space-between;background:var(--color-surface);border-radius:999px;padding:6px 6px 6px 14px">
+        <span style="font-size:13px">💧 Pee <strong>{{ peeCount }}</strong></span>
+        <button class="btn btn-icon btn-secondary" style="background:var(--color-bg)" onClick="{{ incPee }}">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+        </button>
+      </div>
+      <div style="flex:1;display:flex;align-items:center;justify-content:space-between;background:var(--color-surface);border-radius:999px;padding:6px 6px 6px 14px">
+        <span style="font-size:13px">💩 Poop <strong>{{ poopCount }}</strong></span>
+        <button class="btn btn-icon btn-secondary" style="background:var(--color-bg)" onClick="{{ incPoop }}">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+        </button>
+      </div>
+    </div>
+    <sc-if value="{{ walkClientIsNotRover }}">
+      <button class="btn btn-secondary" style="height:44px;font-size:13px" onClick="{{ openShareSheet }}">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+        Share live location with {{ walkClientName }}
+      </button>
+    </sc-if>
+    <sc-if value="{{ walkClientIsRover }}">
+      <a href="{{ roverUrl }}" target="_blank" rel="noopener" class="btn btn-secondary" style="height:44px;font-size:13px;text-decoration:none">Message via Rover app</a>
+    </sc-if>
+    <button class="btn btn-block" style="height:54px;background:var(--color-accent-800);color:#fff;font-size:15px;margin-top:0" onClick="{{ stopWalk }}">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><rect x="5" y="5" width="14" height="14" rx="2"></rect></svg>
+      Stop walk
+    </button>
+  </div>
+</div>
+</sc-if>
+
+<!-- ============ WALK SUMMARY ============ -->
+<sc-if value="{{ isWalkSummary }}">
+<div style="flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:16px">
+  <div style="display:flex;align-items:center;gap:10px">
+    <button class="btn btn-icon btn-secondary" onClick="{{ backFromSummary }}">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+    </button>
+    <h3 style="margin:0">Walk complete 🐾</h3>
+  </div>
+  <div style="font-size:13px;opacity:.7;margin-top:-10px">with {{ walkClientName }}</div>
+  <svg width="100%" height="140" viewBox="0 0 412 200" class="washed" style="border-radius:var(--radius-md);background:var(--color-accent-2-100)">
+    <defs>
+      <pattern id="mapgrid2" width="35" height="35" patternUnits="userSpaceOnUse">
+        <rect width="35" height="35" fill="var(--color-accent-2-100)"></rect>
+        <rect width="35" height="4" fill="var(--color-neutral-200)"></rect>
+        <rect width="4" height="35" fill="var(--color-neutral-200)"></rect>
+      </pattern>
+    </defs>
+    <rect width="412" height="200" fill="url(#mapgrid2)"></rect>
+    <polyline points="{{ routePoints }}" fill="none" stroke="var(--color-accent-700)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"></polyline>
+  </svg>
+  <div style="display:flex;align-items:center;gap:5px;font-size:11px;opacity:.6;margin-top:-8px">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent-2-700)" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"></path><path d="M1.42 9a16 16 0 0 1 21.16 0"></path><path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path></svg>
+    Route captured from cached offline map
+  </div>
+  <div style="display:flex;gap:10px">
+    <div class="card elev-sm" style="flex:1;align-items:center"><div style="font-family:var(--font-heading);font-size:20px">{{ elapsedLabel }}</div><div style="font-size:11px;opacity:.6">time</div></div>
+    <div class="card elev-sm" style="flex:1;align-items:center"><div style="font-family:var(--font-heading);font-size:20px">{{ distanceLabel }}</div><div style="font-size:11px;opacity:.6">distance</div></div>
+  </div>
+  <div style="display:flex;gap:10px">
+    <div class="card elev-sm" style="flex:1;align-items:center"><div style="font-family:var(--font-heading);font-size:20px">💧 {{ peeCount }}</div><div style="font-size:11px;opacity:.6">pees</div></div>
+    <div class="card elev-sm" style="flex:1;align-items:center"><div style="font-family:var(--font-heading);font-size:20px">💩 {{ poopCount }}</div><div style="font-size:11px;opacity:.6">poops</div></div>
+  </div>
+  <div class="field">
+    <label>Notes for this walk</label>
+    <textarea class="input" placeholder="How did it go?" value="{{ walkNoteDraft }}" onChange="{{ setWalkNoteDraft }}"></textarea>
+  </div>
+  <div>
+    <div class="card-kicker" style="margin-bottom:6px">Payment</div>
+    <div class="seg" style="width:100%">
+      <label class="seg-opt" style="flex:1;justify-content:center"><input type="radio" name="pay" checked="{{ payChoicePaidChecked }}" onChange="{{ setPayPaid }}"/><span>Mark paid</span></label>
+      <label class="seg-opt" style="flex:1;justify-content:center"><input type="radio" name="pay" checked="{{ payChoiceOweChecked }}" onChange="{{ setPayOwe }}"/><span>{{ payOweLabel }}</span></label>
+    </div>
+  </div>
+  <div>
+    <div class="card-kicker" style="margin-bottom:6px">Photo from the walk</div>
+    <image-slot id="walk-photo-slot" shape="rounded" style="width:100%;height:150px" placeholder="Drop a photo from the walk"></image-slot>
+  </div>
+  <div style="display:flex;gap:10px">
+    <sc-if value="{{ walkClientIsRover }}">
+      <a href="{{ roverUrl }}" target="_blank" rel="noopener" class="btn btn-secondary" style="flex:1;height:50px;text-decoration:none">Message via Rover app</a>
+    </sc-if>
+    <sc-if value="{{ walkClientIsNotRover }}">
+      <button class="btn btn-secondary" style="flex:1;height:50px" onClick="{{ openShareSheet }}">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+        Share with client
+      </button>
+    </sc-if>
+    <button class="btn btn-primary" style="flex:1;height:50px" onClick="{{ saveWalkSummary }}">Save walk</button>
+  </div>
+</div>
+</sc-if>
+
+<sc-if value="{{ showShareSheet }}">
+  <div class="dialog-backdrop" style="position:absolute" onClick="{{ closeShareSheet }}">
+    <div class="dialog" onClick="{{ stopClick }}">
+      <div class="dialog-title">{{ shareSheetTitle }}</div>
+      <textarea class="input" readonly style="min-height:120px" value="{{ shareText }}"></textarea>
+      <div class="dialog-actions" style="justify-content:space-between;align-items:center">
+        <span style="font-size:12px;opacity:.65">{{ copyStatusLabel }}</span>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-ghost" onClick="{{ closeShareSheet }}">Close</button>
+          <button class="btn btn-primary" onClick="{{ copyShareText }}">Copy text</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</sc-if>
+
+<!-- ============ PAYMENTS ============ -->
+<sc-if value="{{ isPayments }}">
+<div style="flex:1;overflow-y:auto;padding:22px 20px 24px;display:flex;flex-direction:column;gap:18px">
+  <h2 style="margin:0">Payments</h2>
+  <div class="card elev-sm" style="background:var(--color-accent-100)">
+    <div class="card-kicker">Outstanding</div>
+    <h1 style="margin:0;font-size:32px">${{ totalOwed }}</h1>
+    <div style="font-size:12px;opacity:.7">across {{ owedCount }} clients</div>
+  </div>
+
+  <div>
+    <h5 style="margin:0 0 8px">Unpaid walks</h5>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <sc-for list="{{ owedClients }}" as="o" hint-placeholder-count="2">
+        <div class="card elev-sm" style="flex-direction:row;align-items:center;gap:10px">
+          <div style="flex:1">
+            <div style="font-size:13px;font-weight:600">{{ o.name }}</div>
+            <div style="font-size:11.5px;opacity:.65">{{ o.unpaidCountLabel }}</div>
+          </div>
+          <div style="font-family:var(--font-heading);font-size:16px;color:var(--color-accent-700)">${{ o.balance }}</div>
+          <button class="btn btn-secondary btn-icon" onClick="{{ o.markPaid }}">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          </button>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+
+  <div>
+    <h5 style="margin:0 0 8px">Package credits</h5>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <sc-for list="{{ packageClients }}" as="p" hint-placeholder-count="2">
+        <div class="card elev-sm" style="gap:6px">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div style="font-size:13px;font-weight:600">{{ p.name }}</div>
+            <span class="tag {{ p.tagClass }}">{{ p.remainLabel }}</span>
+          </div>
+          <div style="height:6px;border-radius:999px;background:var(--color-neutral-300);overflow:hidden">
+            <div style="height:100%;border-radius:999px;background:var(--color-accent-2-500);width:{{ p.pct }}%"></div>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+<!-- ============ CALENDAR ============ -->
+<sc-if value="{{ isCalendar }}">
+<div style="flex:1;overflow-y:auto;padding:22px 20px 24px;display:flex;flex-direction:column;gap:18px">
+  <h2 style="margin:0">{{ monthLabel }}</h2>
+  <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center">
+    <sc-for list="{{ weekdayLabels }}" as="wd" hint-placeholder-count="7">
+      <div style="font-size:10px;opacity:.55;padding-bottom:2px">{{ wd }}</div>
+    </sc-for>
+    <sc-for list="{{ calendarDays }}" as="d" hint-placeholder-count="35">
+      <div onClick="{{ d.select }}" style="position:relative;height:34px;display:flex;align-items:center;justify-content:center;font-size:12px;border-radius:50%;cursor:pointer;background:{{ d.bg }};color:{{ d.color }}">
+        {{ d.num }}
+        <sc-if value="{{ d.hasSitting }}"><span style="position:absolute;bottom:3px;width:4px;height:4px;border-radius:50%;background:var(--color-accent-2-600)"></span></sc-if>
+      </div>
+    </sc-for>
+  </div>
+
+  <div>
+    <h5 style="margin:0 0 8px">Upcoming sittings</h5>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <sc-for list="{{ sittingsList }}" as="s" hint-placeholder-count="2">
+        <div class="card elev-sm" style="cursor:pointer" onClick="{{ s.select }}">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div style="font-size:13px;font-weight:600">{{ s.clientName }} · {{ s.pet }}</div>
+            <span class="tag tag-accent-2">{{ s.range }}</span>
+          </div>
+          <div style="font-size:12px;opacity:.65">{{ s.address }}</div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+
+  <sc-if value="{{ selSitting }}">
+    <div class="card elev-md" style="gap:10px">
+      <div class="card-title" style="font-size:15px">{{ selSitting.clientName }} · {{ selSitting.range }}</div>
+      <div style="font-size:12px;opacity:.7">{{ selSitting.address }}</div>
+      <div style="display:flex;flex-direction:column;gap:6px;margin-top:4px">
+        <sc-for list="{{ selSitting.tasks }}" as="task" hint-placeholder-count="4">
+          <div style="display:flex;align-items:center;gap:10px;cursor:pointer" onClick="{{ task.toggle }}">
+            <div style="width:20px;height:20px;border-radius:6px;border:1.5px solid var(--color-divider);background:{{ task.bg }};display:flex;align-items:center;justify-content:center;flex:none">
+              <sc-if value="{{ task.done }}"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--color-bg)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></sc-if>
+            </div>
+            <div style="font-size:13px;{{ task.textStyle }}">{{ task.label }}</div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </sc-if>
+</div>
+</sc-if>
+
+<!-- ============ BOTTOM NAV ============ -->
+<sc-if value="{{ showBottomNav }}">
+<div style="display:flex;border-top:1px solid var(--color-divider);background:var(--color-bg);padding:8px 4px 10px">
+  <button onClick="{{ goHome }}" style="flex:1;background:none;border:none;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;color:{{ navColor.home }}">
+    <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"></path><path d="M5 9.5V20a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V9.5"></path></svg>
+    <span style="font-size:10px">Home</span>
+  </button>
+  <button onClick="{{ goClients }}" style="flex:1;background:none;border:none;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;color:{{ navColor.clients }}">
+    <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+    <span style="font-size:10px">Clients</span>
+  </button>
+  <button onClick="{{ goCalendar }}" style="flex:1;background:none;border:none;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;color:{{ navColor.calendar }}">
+    <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="3"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+    <span style="font-size:10px">Calendar</span>
+  </button>
+  <button onClick="{{ goPayments }}" style="flex:1;background:none;border:none;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;color:{{ navColor.payments }}">
+    <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-1"></path><path d="M17 12h4v4h-4z"></path></svg>
+    <span style="font-size:10px">Payments</span>
+  </button>
+</div>
+</sc-if>
+
+<!-- ============ ADD CLIENT DIALOG ============ -->
+<sc-if value="{{ showAddClient }}">
+<div class="dialog-backdrop" style="position:absolute" onClick="{{ closeAddClient }}">
+  <div class="dialog" onClick="{{ stopClick }}">
+    <div class="dialog-title">New client</div>
+    <div class="field"><label>Owner name</label><input class="input" value="{{ draft.name }}" onChange="{{ setDraftName }}"/></div>
+    <div style="display:flex;gap:8px">
+      <div class="field" style="flex:1"><label>Pet name</label><input class="input" value="{{ draft.pet }}" onChange="{{ setDraftPet }}"/></div>
+      <div class="field" style="flex:1"><label>Breed</label><input class="input" value="{{ draft.breed }}" onChange="{{ setDraftBreed }}"/></div>
+    </div>
+    <div class="field"><label>Address</label><input class="input" value="{{ draft.address }}" onChange="{{ setDraftAddress }}"/></div>
+    <div class="field">
+      <label>Rate type</label>
+      <div class="seg" style="width:100%">
+        <label class="seg-opt" style="flex:1;justify-content:center"><input type="radio" name="rt" checked="{{ draftIsPerWalk }}" onChange="{{ setDraftPerWalk }}"/><span>Per walk</span></label>
+        <label class="seg-opt" style="flex:1;justify-content:center"><input type="radio" name="rt" checked="{{ draftIsPackage }}" onChange="{{ setDraftPackage }}"/><span>Package</span></label>
+      </div>
+    </div>
+    <div class="field"><label>Rate per walk ($)</label><input class="input" value="{{ draft.rate }}" onChange="{{ setDraftRate }}"/></div>
+    <div class="dialog-actions">
+      <button class="btn btn-ghost" onClick="{{ closeAddClient }}">Cancel</button>
+      <button class="btn btn-primary" onClick="{{ submitAddClient }}">Add client</button>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+</div>
+</x-import>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+// Android intent link: opens the Rover app (com.rover.android) if installed, else falls back to the Rover website.
+const ROVER_URL='intent://www.rover.com/#Intent;scheme=https;package=com.rover.android;S.browser_fallback_url=https%3A%2F%2Fwww.rover.com%2F;end';
+function initials(n){return n.split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();}
+function mkClient(o){return Object.assign({packageUsed:0,balance:0,log:[],walks:[],sitting:null,phone:'+1 (555) 040-'+String(o.id||0).padStart(4,'0')},o);}
+
+const CLIENTS = [
+mkClient({id:1,name:'Maria Chen',pet:'Biscuit',breed:'Cavalier King Charles',address:'214 Willow St',rateType:'package',packageTotal:10,packageUsed:6,rate:20,
+  notes:{access:'Lockbox code 4471, key under mat',feeding:'1 cup kibble AM, no treats — chicken allergy',medical:'None',behavior:'Shy with strangers, warms up fast'},
+  log:[{date:'Jul 24',text:'Great walk, met the neighbor dog fine.'}],
+  walks:[{date:'Jul 27',duration:'32 min',distance:'1.8 mi',paid:true}]}),
+mkClient({id:2,name:'Jordan Patel',pet:'Tank',breed:'Boxer',address:'88 Elm Ave',rateType:'perwalk',rate:25,balance:25,
+  notes:{access:'Ring doorbell, owner buzzes in',feeding:'No feeding needed',medical:'Hip dysplasia — short walks only',behavior:'High energy, pulls on leash'},
+  log:[{date:'Jul 22',text:'Kept pace slow per vet note, went well.'}],
+  walks:[{date:'Jul 25',duration:'20 min',distance:'1.0 mi',paid:false}]}),
+mkClient({id:3,name:'Sam Rivera',pet:'Luna & Milo',breed:'Aussie mix (x2)',address:'50 Cedar Ln',rateType:'package',packageTotal:5,packageUsed:5,rate:30,
+  notes:{access:'Garage code 8821',feeding:'Separate bowls, Milo eats fast',medical:'None',behavior:'Both friendly, Luna leash-reactive to cats'},
+  log:[{date:'Jul 20',text:'Package used up — need to renew.'}],
+  walks:[{date:'Jul 21',duration:'40 min',distance:'2.1 mi',paid:true}]}),
+mkClient({id:4,name:'Priya Nair',pet:'Cooper',breed:'Golden Retriever',address:'12 Birchwood Dr',rateType:'perwalk',rate:22,
+  notes:{access:'Hidden key in fake rock by porch',feeding:'2 cups kibble, twice daily',medical:'None',behavior:'Very friendly, loves belly rubs'},
+  log:[{date:'Jul 18',text:'Confirmed sitting dates for August trip.'}],
+  walks:[{date:'Jul 23',duration:'35 min',distance:'2.0 mi',paid:true}],
+  sitting:{start:'Aug 3',end:'Aug 5',tasks:[{label:'Morning feed',done:false},{label:'Midday walk',done:false},{label:'Evening feed',done:false},{label:'Water & yard check',done:false}]}}),
+mkClient({id:5,name:'Devon Brooks',pet:'Peanut',breed:'Dachshund',address:'305 Maple Ct',rateType:'package',packageTotal:10,packageUsed:3,rate:18,source:'rover',
+  notes:{access:'Owner home most days, text on arrival',feeding:'Half cup, watch weight',medical:'Back issues — no stairs/jumping',behavior:'Sweet, a bit vocal'},
+  log:[],walks:[{date:'Jul 26',duration:'18 min',distance:'0.8 mi',paid:true}]}),
+mkClient({id:6,name:'Alicia Gomez',pet:'Zeus',breed:'German Shepherd',address:'77 Aspen Way',rateType:'perwalk',rate:28,balance:56,
+  notes:{access:'Side gate, combo 2210',feeding:'No feeding needed',medical:'None',behavior:'Protective, needs firm handling'},
+  log:[{date:'Jul 15',text:'Doing well with the halti collar.'}],
+  walks:[{date:'Jul 19',duration:'30 min',distance:'1.6 mi',paid:false},{date:'Jul 12',duration:'28 min',distance:'1.5 mi',paid:false}]}),
+mkClient({id:7,name:'Noah Kim',pet:'Daisy',breed:'Poodle mix',address:'9 Fairview Rd',rateType:'package',packageTotal:10,packageUsed:9,rate:20,
+  notes:{access:'Doggie door, no entry needed',feeding:'N/A',medical:'None',behavior:'Easygoing, great on leash'},
+  log:[{date:'Jul 21',text:'One walk left on package — remind to renew.'}],
+  walks:[{date:'Jul 24',duration:'25 min',distance:'1.3 mi',paid:true}]}),
+mkClient({id:8,name:'Sophie Turner',pet:'Ranger',breed:'Labrador',address:'421 Highland Ave',rateType:'perwalk',rate:24,
+  notes:{access:'Lockbox code 9034',feeding:'2 cups AM and PM',medical:'None',behavior:'Loves water, avoid puddles on walks'},
+  log:[],walks:[{date:'Jul 20',duration:'33 min',distance:'1.9 mi',paid:true}],
+  sitting:{start:'Aug 8',end:'Aug 10',tasks:[{label:'Morning feed',done:false},{label:'Midday walk',done:false},{label:'Evening feed',done:false},{label:'Meds — none',done:true}]}}),
+mkClient({id:9,name:'Marcus Webb',pet:'Coco',breed:'French Bulldog',address:'63 Orchard St',rateType:'package',packageTotal:5,packageUsed:2,rate:26,
+  notes:{access:'Buzzer, unit 4B',feeding:'Small portions, prone to bloat',medical:'Brachycephalic — short walks, avoid heat',behavior:'Calm, loves attention'},
+  log:[],walks:[{date:'Jul 17',duration:'15 min',distance:'0.6 mi',paid:true}]}),
+mkClient({id:10,name:'Elena Ruiz',pet:'Bear',breed:'Newfoundland',address:'140 Lakeview Dr',rateType:'perwalk',rate:32,balance:32,source:'rover',
+  notes:{access:'Key with neighbor at #142',feeding:'No feeding needed',medical:'None',behavior:'Very large, slow and gentle'},
+  log:[],walks:[{date:'Jul 18',duration:'40 min',distance:'1.7 mi',paid:false}]}),
+mkClient({id:11,name:'Tyler Osei',pet:'Pepper',breed:'Mini Aussie',address:'28 Sunset Blvd',rateType:'package',packageTotal:10,packageUsed:7,rate:20,
+  notes:{access:'Code 5567',feeding:'N/A',medical:'None',behavior:'Smart, knows tricks, high energy'},
+  log:[],walks:[{date:'Jul 22',duration:'30 min',distance:'1.8 mi',paid:true}]}),
+mkClient({id:12,name:'Grace Lin',pet:'Olive',breed:'Beagle',address:'19 Chestnut Pl',rateType:'perwalk',rate:22,
+  notes:{access:'Owner works from home',feeding:'N/A',medical:'None',behavior:'Nose to the ground, loves sniff walks'},
+  log:[],walks:[{date:'Jul 25',duration:'28 min',distance:'1.4 mi',paid:true}]}),
+mkClient({id:13,name:'Ben Foster',pet:'Duke',breed:'Rottweiler',address:'505 Ridge Rd',rateType:'package',packageTotal:10,packageUsed:4,rate:24,source:'rover',
+  notes:{access:'Text on arrival, owner lets in',feeding:'N/A',medical:'None',behavior:'Well trained, great with people'},
+  log:[],walks:[{date:'Jul 19',duration:'35 min',distance:'2.0 mi',paid:true}]}),
+mkClient({id:14,name:'Hannah Diaz',pet:'Waffles',breed:'Corgi',address:'82 Meadow Ln',rateType:'perwalk',rate:20,balance:20,
+  notes:{access:'Lockbox 3120',feeding:'Half cup, twice daily while sitting',medical:'None',behavior:'Chatty, loves belly rubs'},
+  log:[{date:'Jul 14',text:'Confirmed sitting for mid-August.'}],
+  walks:[{date:'Jul 16',duration:'22 min',distance:'1.1 mi',paid:false}],
+  sitting:{start:'Aug 14',end:'Aug 16',tasks:[{label:'Morning feed',done:false},{label:'Midday walk',done:false},{label:'Evening feed',done:false},{label:'Water & yard check',done:false}]}}),
+mkClient({id:15,name:'Owen Clarke',pet:'Rocky',breed:'Pit mix',address:'11 Harbor View',rateType:'package',packageTotal:5,packageUsed:5,rate:25,source:'rover',
+  notes:{access:'Side door, code 1290',feeding:'N/A',medical:'None',behavior:'Sweet but strong, needs experienced walker'},
+  log:[{date:'Jul 20',text:'Package finished, discussed renewal.'}],
+  walks:[{date:'Jul 20',duration:'30 min',distance:'1.7 mi',paid:true}]}),
+];
+
+class Component extends DCLogic {
+  state = {
+    screen: 'home',
+    selectedClientId: null,
+    selSittingClientId: null,
+    search: '',
+    noteDraft: '',
+    showWalkPicker: false,
+    showAddClient: false,
+    showShareSheet: false,
+    copied: false,
+    draft: {name:'',pet:'',breed:'',address:'',rateType:'perwalk',rate:'20'},
+    walk: null,
+    walkNoteDraft: '',
+    payChoice: 'paid',
+    clients: CLIENTS,
+  };
+
+  componentWillUnmount(){ if(this.timer) clearInterval(this.timer); }
+
+  goHome=()=>this.setState({screen:'home',showWalkPicker:false});
+  goClients=()=>this.setState({screen:'clients'});
+  goCalendar=()=>this.setState({screen:'calendar'});
+  goPayments=()=>this.setState({screen:'payments'});
+  openWalkPicker=()=>this.setState({showWalkPicker:true});
+  closeWalkPicker=()=>this.setState({showWalkPicker:false});
+  openAddClient=()=>this.setState({showAddClient:true,draft:{name:'',pet:'',breed:'',address:'',rateType:'perwalk',rate:'20'}});
+  closeAddClient=()=>this.setState({showAddClient:false});
+  stopClick=(e)=>e.stopPropagation();
+  backToClients=()=>this.setState({screen:'clients'});
+
+  setSearch=(e)=>this.setState({search:e.target.value});
+  setNoteDraft=(e)=>this.setState({noteDraft:e.target.value});
+  addNote=()=>{
+    const text=this.state.noteDraft.trim(); if(!text) return;
+    const clients=this.state.clients.map(c=> c.id===this.state.selectedClientId ? {...c, log:[{date:'Today',text}, ...c.log]} : c);
+    this.setState({clients, noteDraft:''});
+  };
+  markClientPaid=(id)=>{
+    const clients=this.state.clients.map(c=> c.id===id ? {...c, balance:0, walks:c.walks.map(w=>({...w,paid:true}))} : c);
+    this.setState({clients});
+  };
+
+  setDraftName=(e)=>this.setState({draft:{...this.state.draft,name:e.target.value}});
+  setDraftPet=(e)=>this.setState({draft:{...this.state.draft,pet:e.target.value}});
+  setDraftBreed=(e)=>this.setState({draft:{...this.state.draft,breed:e.target.value}});
+  setDraftAddress=(e)=>this.setState({draft:{...this.state.draft,address:e.target.value}});
+  setDraftRate=(e)=>this.setState({draft:{...this.state.draft,rate:e.target.value}});
+  setDraftPerWalk=()=>this.setState({draft:{...this.state.draft,rateType:'perwalk'}});
+  setDraftPackage=()=>this.setState({draft:{...this.state.draft,rateType:'package'}});
+  submitAddClient=()=>{
+    const d=this.state.draft; if(!d.name.trim()) return;
+    const nc=mkClient({id:Date.now(),name:d.name,pet:d.pet||'Pet',breed:d.breed||'—',address:d.address||'—',
+      rateType:d.rateType, rate:parseFloat(d.rate)||20, packageTotal:d.rateType==='package'?10:undefined,
+      notes:{access:'—',feeding:'—',medical:'—',behavior:'—'}});
+    this.setState({clients:[nc,...this.state.clients], showAddClient:false});
+  };
+
+  startWalkFor=(clientId)=>{
+    if(this.timer) clearInterval(this.timer);
+    this.setState({screen:'walkActive', showWalkPicker:false, selectedClientId:clientId,
+      walk:{clientId, elapsed:0, distanceMi:0, path:[[40,340],[40,340]], peeCount:0, poopCount:0}});
+    this.timer=setInterval(()=>{
+      this.setState(s=>{
+        if(!s.walk) return null;
+        const last=s.walk.path[s.walk.path.length-1];
+        const nx=Math.max(20,Math.min(392,last[0]+(Math.random()*36-14)));
+        const ny=Math.max(60,Math.min(660,last[1]-(6+Math.random()*10)));
+        const path=[...s.walk.path,[nx,ny]].slice(-60);
+        return {walk:{...s.walk, elapsed:s.walk.elapsed+1, distanceMi:s.walk.distanceMi+0.007+Math.random()*0.006, path}};
+      });
+    },1000);
+  };
+  stopWalk=()=>{
+    if(this.timer) clearInterval(this.timer);
+    const c=this.state.clients.find(c=>c.id===this.state.walk.clientId);
+    this.setState({screen:'walkSummary', payChoice: c && c.rateType==='package' ? 'paid' : 'paid', walkNoteDraft:''});
+  };
+  cancelWalk=()=>{
+    if(this.timer) clearInterval(this.timer);
+    this.setState({screen:'home', walk:null});
+  };
+  backFromSummary=()=>{
+    const clientId = this.state.walk ? this.state.walk.clientId : this.state.selectedClientId;
+    this.setState({screen:'clientDetail', selectedClientId:clientId, walk:null});
+  };
+  incPee=()=>this.setState(s=>({walk:{...s.walk, peeCount:s.walk.peeCount+1}}));
+  incPoop=()=>this.setState(s=>({walk:{...s.walk, poopCount:s.walk.poopCount+1}}));
+  openShareSheet=()=>this.setState({showShareSheet:true, copied:false});
+  closeShareSheet=()=>this.setState({showShareSheet:false});
+  copyShareText=()=>{
+    const text=this._shareText||'';
+    try{ navigator.clipboard.writeText(text); }catch(e){}
+    this.setState({copied:true});
+    setTimeout(()=>this.setState({copied:false}),2000);
+  };
+  renewPackage=(id)=>{
+    const clients=this.state.clients.map(c=> c.id===id ? {...c, packageUsed:0} : c);
+    this.setState({clients});
+  };
+  setWalkNoteDraft=(e)=>this.setState({walkNoteDraft:e.target.value});
+  setPayPaid=()=>this.setState({payChoice:'paid'});
+  setPayOwe=()=>this.setState({payChoice:'owe'});
+  saveWalkSummary=()=>{
+    const w=this.state.walk; if(!w) return;
+    const note=this.state.walkNoteDraft.trim();
+    const mins=Math.round(w.elapsed/60)||1;
+    const dist=w.distanceMi.toFixed(2)+' mi';
+    const clients=this.state.clients.map(c=>{
+      if(c.id!==w.clientId) return c;
+      const isPackage=c.rateType==='package';
+      const paid=this.state.payChoice==='paid';
+      const walkRec={date:'Today',duration:mins+' min',distance:dist,paid: isPackage ? true : paid};
+      const potty = '💧 '+w.peeCount+' · 💩 '+w.poopCount;
+      const fullNote = note ? (potty+' — '+note) : potty;
+      const log = [{date:'Today',text:fullNote},...c.log];
+      return {...c,
+        packageUsed: isPackage ? c.packageUsed+1 : c.packageUsed,
+        balance: isPackage ? c.balance : (paid ? c.balance : c.balance + c.rate),
+        walks:[walkRec, ...c.walks], log};
+    });
+    this.setState({clients, screen:'clientDetail', selectedClientId:w.clientId, walk:null});
+  };
+
+  toggleTask=(clientId, idx)=>{
+    const clients=this.state.clients.map(c=>{
+      if(c.id!==clientId || !c.sitting) return c;
+      const tasks=c.sitting.tasks.map((t,i)=> i===idx ? {...t,done:!t.done} : t);
+      return {...c, sitting:{...c.sitting, tasks}};
+    });
+    this.setState({clients});
+  };
+
+  fmtTime(sec){const m=Math.floor(sec/60),s=sec%60;return String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');}
+
+  renderVals(){
+    const s=this.state;
+    const clients=s.clients;
+    const selClientRaw = clients.find(c=>c.id===s.selectedClientId);
+
+    const withOpen = (c)=>({
+      ...c, initial:initials(c.name), isRover: c.source==='rover',
+      open: ()=>this.setState({screen:'clientDetail', selectedClientId:c.id}),
+      pickForWalk: c.source==='rover' ? (()=>window.open(ROVER_URL,'_blank')) : (()=>this.startWalkFor(c.id)),
+    });
+
+    const filtered = clients.filter(c=>{
+      const q=s.search.toLowerCase();
+      return !q || c.name.toLowerCase().includes(q) || c.pet.toLowerCase().includes(q);
+    }).map(c=>{
+      const balanceTag = c.balance>0;
+      const lowPkg = c.rateType==='package' && (c.packageTotal-c.packageUsed)<=2;
+      return {...withOpen(c),
+        isRover: c.source==='rover',
+        tagClass: balanceTag ? 'tag-accent' : (lowPkg ? 'tag-accent-2' : 'tag-neutral'),
+        tagText: balanceTag ? ('$'+c.balance+' owed') : (c.rateType==='package' ? (c.packageTotal-c.packageUsed)+' left' : 'per walk'),
+      };
+    });
+
+    let selClient=null;
+    if(selClientRaw){
+      const c=selClientRaw;
+      selClient={
+        ...c, initial:initials(c.name), isRover: c.source==='rover',
+        rateLabel: c.rateType==='package' ? '$'+c.rate+' · '+(c.packageTotal-c.packageUsed)+'/'+c.packageTotal+' left' : '$'+c.rate+'/walk',
+        balanceLabel: c.balance>0 ? '$'+c.balance+' owed' : 'Paid up',
+        balanceColor: c.balance>0 ? 'var(--color-accent-700)' : 'var(--color-accent-2-700)',
+        showMarkPaid: c.balance>0, isNotRover: c.source!=='rover',
+        messageUrl: c.source==='rover' ? ROVER_URL : ('sms:'+c.phone+'?body='+encodeURIComponent('Hi '+c.name.split(' ')[0]+', this is Ash — checking in about '+c.pet+'!')),
+        messageLabel: c.source==='rover' ? 'Message in Rover app' : 'Message client',
+        markPaid: ()=>this.markClientPaid(c.id),
+        startWalk: ()=>this.startWalkFor(c.id),
+        hasSitting: !!c.sitting,
+        sitting: c.sitting ? {range: c.sitting.start+' – '+c.sitting.end} : null,
+        walks: c.walks.map(w=>({...w, tagClass: w.paid?'tag-accent-2':'tag-accent', tagText: w.paid?'Paid':'Unpaid'})),
+      };
+    }
+
+    const walk=s.walk;
+    const walkClient = walk ? clients.find(c=>c.id===walk.clientId) : null;
+    const routePoints = walk ? walk.path.map(p=>p[0]+','+p[1]).join(' ') : '';
+    const routeStart = walk ? {x:walk.path[0][0],y:walk.path[0][1]} : {x:0,y:0};
+    const routeEnd = walk ? {x:walk.path[walk.path.length-1][0],y:walk.path[walk.path.length-1][1]} : {x:0,y:0};
+    const elapsedLabel = walk ? this.fmtTime(walk.elapsed) : '00:00';
+    const distanceLabel = walk ? walk.distanceMi.toFixed(2)+' mi' : '0.00 mi';
+    const pace = walk && walk.distanceMi>0.03 ? this.fmtTime(Math.round((walk.elapsed/60)/walk.distanceMi*60)) : '—:—';
+
+    const owedClientsRaw = clients.filter(c=>c.balance>0).sort((a,b)=>b.balance-a.balance);
+    const owedClients = owedClientsRaw.map(c=>({
+      name:c.name, balance:c.balance,
+      unpaidCountLabel: c.walks.filter(w=>!w.paid).length + ' unpaid walk' + (c.walks.filter(w=>!w.paid).length===1?'':'s'),
+      markPaid: ()=>this.markClientPaid(c.id),
+    }));
+    const totalOwed = owedClientsRaw.reduce((a,c)=>a+c.balance,0);
+
+    const packageClients = clients.filter(c=>c.rateType==='package').map(c=>{
+      const remain=c.packageTotal-c.packageUsed;
+      return {name:c.name, remainLabel: remain+' left', pct: Math.max(4,(remain/c.packageTotal)*100),
+        tagClass: remain<=2 ? 'tag-accent' : 'tag-accent-2'};
+    });
+
+    const reminders=[];
+    owedClientsRaw.forEach(c=>reminders.push({text:c.name+' owes $'+c.balance, tagText:'Unpaid', open:()=>this.setState({screen:'clientDetail',selectedClientId:c.id})}));
+    clients.filter(c=>c.rateType==='package' && (c.packageTotal-c.packageUsed)<=2).forEach(c=>{
+      const left=c.packageTotal-c.packageUsed;
+      reminders.push({text:c.name+' has '+left+' walk'+(left===1?'':'s')+' left on their package',
+        tagText:'Low', open:()=>this.setState({screen:'clientDetail',selectedClientId:c.id}),
+        renew:()=>this.renewPackage(c.id)});
+    });
+
+    const todaySchedule=[
+      {time:'8:00 AM', name:'Jordan Patel', pet:'Tank', type:'Walk', petInitial:'T'},
+      {time:'12:30 PM', name:'Priya Nair', pet:'Cooper', type:'Sitting check-in', petInitial:'C'},
+      {time:'5:30 PM', name:'Grace Lin', pet:'Olive', type:'Walk', petInitial:'O'},
+    ];
+
+    // calendar
+    const monthLabel='August 2026';
+    const sittingByDay={3:4,4:4,5:4,8:8,9:8,10:8,14:14,15:14,16:14};
+    const leadingBlanks=6; // Aug 1 2026 assumed Saturday
+    const days=[];
+    for(let i=0;i<leadingBlanks;i++) days.push({blank:true});
+    for(let d=1; d<=31; d++){
+      const cid=sittingByDay[d];
+      const sel = s.selSittingClientId===cid && cid;
+      days.push({
+        num:d, hasSitting:!!cid,
+        bg: sel ? 'var(--color-accent-700)' : (cid ? 'var(--color-accent-2-100)' : 'transparent'),
+        color: sel ? 'var(--color-bg)' : 'var(--color-text)',
+        select: cid ? (()=>this.setState({selSittingClientId:cid, screen:'calendar'})) : (()=>{}),
+      });
+    }
+
+    const sittingClients = clients.filter(c=>c.sitting);
+    const sittingsList = sittingClients.map(c=>({
+      clientName:c.name, pet:c.pet, address:c.address, range:c.sitting.start+' – '+c.sitting.end,
+      select: ()=>this.setState({selSittingClientId:c.id}),
+    }));
+    let selSitting=null;
+    if(s.selSittingClientId){
+      const c=clients.find(c=>c.id===s.selSittingClientId);
+      if(c && c.sitting){
+        selSitting={clientName:c.name, range:c.sitting.start+' – '+c.sitting.end, address:c.address,
+          tasks: c.sitting.tasks.map((t,i)=>({label:t.label, done:t.done,
+            bg: t.done ? 'var(--color-accent-2-600)' : 'transparent',
+            textStyle: t.done ? 'text-decoration:line-through;opacity:.55' : '',
+            toggle: ()=>this.toggleTask(c.id, i)}))};
+      }
+    }
+
+    const screen=s.screen;
+    return {
+      isHome: screen==='home', isClients: screen==='clients', isClientDetail: screen==='clientDetail',
+      isWalkActive: screen==='walkActive', isWalkSummary: screen==='walkSummary',
+      isPayments: screen==='payments', isCalendar: screen==='calendar',
+      showBottomNav: ['home','clients','calendar','payments'].includes(screen),
+      navColor: {
+        home: screen==='home' ? 'var(--color-accent-700)' : 'var(--color-neutral-600)',
+        clients: screen==='clients' ? 'var(--color-accent-700)' : 'var(--color-neutral-600)',
+        calendar: screen==='calendar' ? 'var(--color-accent-700)' : 'var(--color-neutral-600)',
+        payments: screen==='payments' ? 'var(--color-accent-700)' : 'var(--color-neutral-600)',
+      },
+      goHome:this.goHome, goClients:this.goClients, goCalendar:this.goCalendar, goPayments:this.goPayments,
+      openWalkPicker:this.openWalkPicker, closeWalkPicker:this.closeWalkPicker, showWalkPicker:s.showWalkPicker,
+      openAddClient:this.openAddClient, closeAddClient:this.closeAddClient, showAddClient:s.showAddClient, stopClick:this.stopClick,
+      backToClients:this.backToClients,
+      todayLabel:'Tuesday, July 28', weeklyEarnings: 268, walksCompleted: 12, activeSittingsCount: sittingClients.length,
+      clients: filtered, search:s.search, setSearch:this.setSearch, filteredClients:filtered,
+      selClient, noteDraft:s.noteDraft, setNoteDraft:this.setNoteDraft, addNote:this.addNote,
+      todaySchedule, reminders,
+      walkClientName: walkClient ? walkClient.name : '', routePoints, routeStart, routeEnd,
+      mapEmbedUrl: walkClient ? ('https://maps.google.com/maps?q='+encodeURIComponent(walkClient.address)+'&z=15&output=embed') : '',
+      elapsedLabel, distanceLabel, paceLabel: pace, stopWalk:this.stopWalk, cancelWalk:this.cancelWalk, backFromSummary:this.backFromSummary,
+      peeCount: walk ? walk.peeCount : 0, poopCount: walk ? walk.poopCount : 0, incPee:this.incPee, incPoop:this.incPoop,
+      showShareSheet:s.showShareSheet, openShareSheet:this.openShareSheet, closeShareSheet:this.closeShareSheet, copyShareText:this.copyShareText,
+      walkClientIsRover: !!(walkClient && walkClient.source==='rover'),
+      walkClientIsNotRover: !!(walkClient && walkClient.source!=='rover'),
+      shareSheetTitle: screen==='walkActive' ? 'Share live location' : 'Share summary',
+      roverUrl: ROVER_URL,
+      shareText: (this._shareText = walkClient ? (
+        screen==='walkActive'
+          ? ('🔴 Live: tracking '+walkClient.pet+"'s walk now — "+elapsedLabel+' in, '+distanceLabel+' so far.')
+          : (walkClient.name+"'s walk with "+walkClient.pet+' — '+elapsedLabel+', '+distanceLabel+'. 💧 '+(walk?walk.peeCount:0)+' · 💩 '+(walk?walk.poopCount:0)+(s.walkNoteDraft.trim() ? ('. Notes: '+s.walkNoteDraft.trim()) : ''))
+      ) : ''),
+      copyStatusLabel: s.copied ? 'Copied!' : ' ',
+      walkNoteDraft:s.walkNoteDraft, setWalkNoteDraft:this.setWalkNoteDraft,
+      payChoicePaidChecked: s.payChoice==='paid', payChoiceOweChecked: s.payChoice==='owe',
+      setPayPaid:this.setPayPaid, setPayOwe:this.setPayOwe,
+      payOweLabel: walkClient && walkClient.rateType==='package' ? 'Use credit' : 'Mark owed',
+      saveWalkSummary:this.saveWalkSummary,
+      totalOwed, owedCount: owedClientsRaw.length, owedClients, packageClients,
+      monthLabel, weekdayLabels:['S','M','T','W','T','F','S'], calendarDays:days,
+      sittingsList, selSitting,
+      draft:s.draft, setDraftName:this.setDraftName, setDraftPet:this.setDraftPet, setDraftBreed:this.setDraftBreed,
+      setDraftAddress:this.setDraftAddress, setDraftRate:this.setDraftRate,
+      draftIsPerWalk: s.draft.rateType==='perwalk', draftIsPackage: s.draft.rateType==='package',
+      setDraftPerWalk:this.setDraftPerWalk, setDraftPackage:this.setDraftPackage, submitAddClient:this.submitAddClient,
+    };
+  }
+}
+</script>
+</body>
+</html>

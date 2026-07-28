@@ -1,0 +1,17 @@
+{
+  "appId": "com.calliesalpinecanine.walker",
+  "appName": "Callie's Alpine Canine Walker",
+  "webDir": "public",
+  "bundledWebRuntime": false,
+  "android": {
+    "buildOptions": {
+      "keystorePath": null,
+      "keystoreAlias": null
+    }
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 0
+    }
+  }
+}

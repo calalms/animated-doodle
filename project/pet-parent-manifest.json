@@ -1,0 +1,33 @@
+{
+  "name": "Callie's Alpine Canine — Pet Parent",
+  "short_name": "CAC Parent",
+  "description": "Track your dog's walks, sitting, and pay for services",
+  "start_url": "/Pet Parent App.dc.html",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#f5ead8",
+  "theme_color": "#c67139",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%23f5ead8' width='192' height='192'/><circle cx='96' cy='70' r='28' fill='%237a8a5e'/><path d='M60 120 Q60 100 96 100 Q132 100 132 120 L132 150 Q132 165 120 165 L72 165 Q60 165 60 150 Z' fill='%23c67139'/><text x='96' y='50' font-size='36' font-family='sans-serif' text-anchor='middle' fill='%23c67139'>🐾</text></svg>",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect fill='%23f5ead8' width='512' height='512'/><circle cx='256' cy='180' r='75' fill='%237a8a5e'/><path d='M160 320 Q160 270 256 270 Q352 270 352 320 L352 400 Q352 440 320 440 L192 440 Q160 440 160 400 Z' fill='%23c67139'/><text x='256' y='140' font-size='100' font-family='sans-serif' text-anchor='middle' fill='%23c67139'>🐾</text></svg>",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 540 720'><rect fill='%23f5ead8' width='540' height='720'/><rect fill='%23c67139' width='540' height='60' opacity='0.2'/><text x='30' y='40' font-size='20' font-family='sans-serif' fill='%23201e1d'>Pet Parent App</text><circle cx='270' cy='180' r='40' fill='%237a8a5e' opacity='0.6'/><text x='270' y='185' font-size='60' font-family='sans-serif' text-anchor='middle' fill='%23c67139'>🐾</text><rect x='30' y='250' width='480' height='80' rx='16' fill='%23ffe1d0' opacity='0.5'/><text x='270' y='290' font-size='28' font-family='sans-serif' text-anchor='middle' fill='%238c491a'>Track your walk</text></svg>",
+      "sizes": "540x720",
+      "type": "image/svg+xml",
+      "form_factor": "narrow"
+    }
+  ]
+}
